@@ -16,8 +16,10 @@ class Settings:
     # 音频配置
     if platform.system() == "Windows":
         AUDIO_DIR = Path(os.getenv("AUDIO_DIR", "D:\\"))
+        CACHE_DIR = Path(os.getenv("CACHE_DIR", "D:\\"))
     else:
         AUDIO_DIR = Path(os.getenv("AUDIO_DIR", "/tmp/audio"))
+        CACHE_DIR = Path(os.getenv("CACHE_DIR", "tmp"))
     
     # 支持的音频格式
     SUPPORTED_FORMATS = set(os.getenv("SUPPORTED_FORMATS", "wav,mp3,ogg,flac").split(','))
