@@ -25,7 +25,7 @@ RUN mkdir -p /var/run/pulse && \
     echo "load-module module-suspend-on-idle" >> /etc/pulse/default.pa
 
 # 安装 Python 依赖
-RUN pip3 install fastapi uvicorn python-multipart aiofiles websockets
+RUN pip3 install fastapi uvicorn python-multipart aiofiles websockets edge-tts
 
 # 复制应用代码
 COPY ./app /app/

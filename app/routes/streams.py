@@ -2,10 +2,10 @@ from fastapi import APIRouter, UploadFile, File, HTTPException, BackgroundTasks
 import aiofiles
 import os
 
-from models.response import StreamResponse, VolumeControl
-from managers.audio_manager import audio_manager
-from utils.audio_utils import start_stream_player
-from utils.file_utils import save_upload_file
+from models import StreamResponse, VolumeControl
+from managers import audio_manager
+from utils import start_stream_player
+from utils import save_upload_file
 from config import settings
 
 router = APIRouter(prefix="/api/stream", tags=["streams"])
@@ -56,7 +56,7 @@ async def stop_stream_session(session_id: str):
 @router.post("/direct")
 async def stream_audio_direct(file: UploadFile = File(...), volume: float = settings.DEFAULT_VOLUME):
     """直接流式播放音频数据（一次性接口）"""
-    from utils.audio_utils import play_audio_file
+    from utils import play_audio_file
     
     # 创建临时会话
     session = audio_manager.create_session()

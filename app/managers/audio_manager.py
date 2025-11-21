@@ -104,3 +104,6 @@ class AudioManager:
         
         if sessions_to_cleanup or streams_to_cleanup:
             logger.info(f"Cleaned up {len(sessions_to_cleanup)} sessions and {len(streams_to_cleanup)} streams")
+
+# 全局音频管理器实例
+audio_manager = AudioManager()

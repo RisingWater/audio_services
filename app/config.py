@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+import platform
 
 # 基础配置
 class Settings:
@@ -9,7 +10,10 @@ class Settings:
     PORT = 6018
     
     # 音频配置
-    AUDIO_DIR = Path("/tmp/audio")
+    if platform.system() == "Windows":
+        AUDIO_DIR = Path("D:\\")
+    else:
+        AUDIO_DIR = Path("/tmp/audio")
     SUPPORTED_FORMATS = {'wav', 'mp3', 'ogg', 'flac'}
     DEFAULT_VOLUME = 1.0
     SAMPLE_RATE = 44100

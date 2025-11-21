@@ -1,5 +1,6 @@
 from .session import PlaybackSession, StreamSession
 from .response import PlayResponse, StreamResponse, SessionStatus, VolumeControl
+from .tts import TTSRequest, TTSResponse, VoiceInfo
 
 __all__ = [
     "PlaybackSession",
@@ -7,5 +8,8 @@ __all__ = [
     "PlayResponse",
     "StreamResponse",
     "SessionStatus",
-    "VolumeControl"
+    "VolumeControl",
+    "TTSRequest",
+    "TTSResponse",
+    "VoiceInfo"
 ]

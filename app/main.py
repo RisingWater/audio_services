@@ -4,12 +4,11 @@ import logging
 from datetime import datetime
 
 from config import settings
-from managers.audio_manager import AudioManager
-from models.response import PlayResponse
-from utils.audio_utils import play_audio_file
-from utils.file_utils import save_upload_file
-
-# 导入路由
+from managers import audio_manager
+from models import PlayResponse
+from utils import play_audio_file
+from utils import save_upload_file
+from routes import tts
 from routes import sessions, streams, websocket
 
 # 配置日志
@@ -23,9 +22,7 @@ app = FastAPI(title=settings.APP_NAME, version=settings.VERSION)
 app.include_router(sessions.router)
 app.include_router(streams.router)
 app.include_router(websocket.router)
-
-# 全局音频管理器
-audio_manager = AudioManager()
+app.include_router(tts.router)
 
 @app.get("/")
 async def root():
@@ -33,7 +30,7 @@ async def root():
     active_sessions = len([s for s in audio_manager.get_all_sessions() if s.status == "playing"])
     active_streams = len([s for s in audio_manager.get_all_stream_sessions() if s.status == "playing"])
     return {
-        "message": "Multi-track Audio Web Player API", 
+        "message": "Audio Web Player API", 
         "version": settings.VERSION,
         "active_sessions": active_sessions,
         "active_streams": active_streams,

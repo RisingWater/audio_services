@@ -2,7 +2,7 @@ from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 import json
 import logging
 
-from managers.audio_manager import audio_manager
+from managers import audio_manager
 
 logger = logging.getLogger(__name__)
 router = APIRouter(tags=["websocket"])
@@ -17,7 +17,7 @@ async def websocket_stream(websocket: WebSocket, session_id: str):
     
     try:
         # 启动播放器
-        from utils.audio_utils import start_stream_player
+        from utils import start_stream_player
         import asyncio
         await asyncio.get_event_loop().run_in_executor(
             None, start_stream_player, session.session_id, audio_manager

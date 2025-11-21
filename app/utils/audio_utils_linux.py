@@ -123,27 +123,3 @@ def start_stream_player(session_id: str, audio_manager):
         session.status = "error"
     finally:
         session.end_time = datetime.now()
-
-def get_audio_devices():
-    """获取可用的音频设备"""
-    try:
-        # 使用 pactl 列出 PulseAudio 设备
-        result = subprocess.run([
-            'pactl', 'list', 'sinks', 'short'
-        ], capture_output=True, text=True, check=True)
-        
-        devices = []
-        for line in result.stdout.strip().split('\n'):
-            if line:
-                parts = line.split('\t')
-                if len(parts) >= 2:
-                    devices.append({
-                        'id': parts[0],
-                        'name': parts[1],
-                        'description': parts[1] if len(parts) > 1 else ''
-                    })
-        return devices
-    except Exception as e:
-        logger.error(f"Error getting audio devices: {e}")
-        return []
-

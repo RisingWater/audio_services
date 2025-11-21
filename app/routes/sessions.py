@@ -1,10 +1,10 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException, BackgroundTasks
 from typing import List
 
-from models.response import PlayResponse, SessionStatus, VolumeControl
-from managers.audio_manager import audio_manager
-from utils.audio_utils import play_audio_file
-from utils.file_utils import save_upload_file
+from models import PlayResponse, SessionStatus, VolumeControl
+from managers import audio_manager
+from utils import play_audio_file
+from utils import save_upload_file
 from config import settings
 
 router = APIRouter(prefix="/api/sessions", tags=["sessions"])
