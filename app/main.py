@@ -55,7 +55,7 @@ async def play_audio(background_tasks: BackgroundTasks, file: UploadFile = File(
         content = await file.read()
         await f.write(content)
     
-    background_tasks.add_task(play_audio_file, session.session_id, str(temp_file), audio_manager)
+    background_tasks.add_task(play_audio_file, session.session_id, str(temp_file), audio_manager, delete_file=True)
     
     return PlayResponse(
         session_id=session.session_id,
