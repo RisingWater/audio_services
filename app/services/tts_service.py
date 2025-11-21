@@ -6,7 +6,6 @@ import tempfile
 from pathlib import Path
 from typing import Optional, AsyncGenerator
 import edge_tts
-import aiofiles
 
 from config import settings
 
@@ -31,7 +30,7 @@ class TTSService:
         try:
             # 创建临时文件
             temp_file = self.audio_dir / f"tts_{os.urandom(4).hex()}.mp3"
-            
+
             communicate = edge_tts.Communicate(text, voice)
             communicate.save_sync(str(temp_file))
             
@@ -46,20 +45,7 @@ class TTSService:
         except Exception as e:
             logger.error(f"TTS conversion error: {e}")
             return None
-    
-    async def text_to_speech_stream(self, text: str, voice: str = "zh-CN-XiaoxiaoNeural",
-                                  rate: str = "+0%", volume: str = "+0%") -> AsyncGenerator[bytes, None]:
-        """流式生成语音数据"""
-        try:
-            communicate = edge_tts.Communicate(text, voice, rate=rate, volume=volume)
-            
-            async for chunk in communicate.stream():
-                if chunk["type"] == "audio":
-                    yield chunk["data"]
-                    
-        except Exception as e:
-            logger.error(f"TTS stream error: {e}")
-    
+
     async def cleanup_file(self, file_path: str):
         """清理临时文件"""
         try:

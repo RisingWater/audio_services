@@ -75,35 +75,6 @@ async def text_to_speech(background_tasks: BackgroundTasks, request: TTSRequest)
         logger.error(f"TTS error: {e}")
         raise HTTPException(status_code=500, detail=f"语音转换失败: {e}")
 
-@router.post("/speak-stream", response_model=StreamResponse)
-async def text_to_speech_stream(request: TTSRequest):
-    """流式文字转语音（边转换边播放）"""
-    if not request.text.strip():
-        raise HTTPException(status_code=400, detail="文本内容不能为空")
-    
-    # 对于流式播放，限制更长的文本
-    if len(request.text) > 10000:
-        raise HTTPException(status_code=400, detail="文本过长，请限制在10000字符以内")
-    
-    try:
-        # 创建流式会话
-        session = audio_manager.create_stream_session()
-        session.volume = request.volume_level
-        
-        # 在后台启动流式 TTS
-        background_tasks = BackgroundTasks()
-        background_tasks.add_task(stream_tts_playback, session.session_id, request, audio_manager)
-        
-        return StreamResponse(
-            session_id=session.session_id,
-            status="streaming",
-            message="流式语音生成中"
-        )
-        
-    except Exception as e:
-        logger.error(f"Stream TTS error: {e}")
-        raise HTTPException(status_code=500, detail=f"流式语音转换失败: {e}")
-
 @router.post("/speak-direct")
 async def text_to_speech_direct(background_tasks: BackgroundTasks, request: TTSRequest):
     """直接播放文字转语音（不保存会话）"""
@@ -157,34 +128,3 @@ async def play_and_cleanup(session_id: str, audio_file: str, audio_manager):
         logger.error(f"Play and cleanup error: {e}")
         # 确保文件被清理
         await tts_service.cleanup_file(audio_file)
-
-async def stream_tts_playback(session_id: str, request: TTSRequest, audio_manager):
-    """流式 TTS 播放"""
-    try:
-        from utils import start_stream_player
-        import queue
-        
-        session = audio_manager.get_stream_session(session_id)
-        if not session:
-            return
-        
-        # 启动流式播放器
-        await start_stream_player(session_id, audio_manager)
-        
-        # 流式生成语音并发送到播放器
-        async for audio_data in tts_service.text_to_speech_stream(
-            text=request.text,
-            voice=request.voice,
-            rate=request.rate,
-            volume=request.volume
-        ):
-            if session.status != "playing":
-                break
-            session.input_queue.put(audio_data)
-        
-        # 标记流结束
-        session.input_queue.put(b"")
-        
-    except Exception as e:
-        logger.error(f"Stream TTS playback error: {e}")
-        session.status = "error"

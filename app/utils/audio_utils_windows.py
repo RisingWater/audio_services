@@ -10,7 +10,7 @@ from config import settings
 logger = logging.getLogger(__name__)
 
 def play_audio_file(session_id: str, file_path: str, audio_manager):
-    """使用 pyaudio 播放音频文件"""
+    """使用 playsound 播放音频文件（支持 MP3、WAV）"""
     session = audio_manager.get_session(session_id)
     if not session:
         return
@@ -19,41 +19,21 @@ def play_audio_file(session_id: str, file_path: str, audio_manager):
         session.status = "playing"
         session.start_time = datetime.now()
         
-        import pyaudio
-        import wave
+        from playsound import playsound
         
-        # 打开音频文件
-        wf = wave.open(file_path, 'rb')
-        
-        # 初始化 pyaudio
-        p = pyaudio.PyAudio()
-        
-        # 打开音频流
-        stream = p.open(format=p.get_format_from_width(wf.getsampwidth()),
-                       channels=wf.getnchannels(),
-                       rate=wf.getframerate(),
-                       output=True)
-        
-        # 播放音频
-        data = wf.readframes(1024)
-        while data and session.status == "playing":
-            stream.write(data)
-            data = wf.readframes(1024)
-        
-        # 清理资源
-        stream.stop_stream()
-        stream.close()
-        p.terminate()
-        wf.close()
+        # 播放音频（阻塞式）
+        playsound(file_path)
         
         session.end_time = datetime.now()
         session.status = "completed"
+        logger.info(f"Playback completed for session {session_id}")
         
     except Exception as e:
         logger.error(f"Playback error for session {session_id}: {e}")
         session.status = "error"
         session.end_time = datetime.now()
     finally:
+        # 清理文件
         try:
             if os.path.exists(file_path):
                 os.unlink(file_path)
