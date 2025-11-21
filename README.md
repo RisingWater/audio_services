@@ -19,20 +19,23 @@
 - Docker
 - 音频输出设备
 
-### 一键启动
+### 构建镜像
 
 ```bash
 # 构建镜像
 docker build -t audio-services .
+```
 
-# 运行容器
+### 运行容器
+```bash
 docker run -d \
     --name audio-services \
     --device /dev/snd:/dev/snd \
+    -v ${WORKDIR}:/workdir \
     --group-add audio \
     -p 6018:6018 \
     --restart unless-stopped \
-    audio-services
+    audio-web-player
 ```
 
 ## 📖 API 文档

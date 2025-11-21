@@ -5,6 +5,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # 安装依赖 (包含 pulseaudio)
 RUN apt-get update && apt-get install -y \
+    git \
     python3 \
     python3-pip \
     alsa-utils \
@@ -24,16 +25,9 @@ RUN mkdir -p /var/run/pulse && \
     echo "load-module module-always-sink" >> /etc/pulse/default.pa && \
     echo "load-module module-suspend-on-idle" >> /etc/pulse/default.pa
 
-# 复制应用代码
-COPY ./app /app/
+# 从 GitHub 克隆代码
+RUN pip3 install fastapi uvicorn python-multipart aiofiles websockets edge-tts playsound
 
-# 安装 Python 依赖
-RUN pip3 install -r /app/requirements.txt
-
-WORKDIR /app
-
-EXPOSE 6018
-
-# 启动 PulseAudio 和应用
-CMD pulseaudio --daemonize --system --disallow-exit --exit-idle-time=-1 && \
-    uvicorn main:app --host 0.0.0.0 --port 6018
+COPY run.sh /run.sh
+RUN chmod +x /run.sh
+CMD ["/run.sh"]
