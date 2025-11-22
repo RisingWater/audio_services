@@ -27,7 +27,9 @@ RUN apt-get update && apt-get install -y \
 
 # 添加用户
 RUN useradd -m -u 1000 appuser && \
-    usermod -a -G audio,pulse,pulse-access sudo appuser
+    usermod -a -G audio,pulse,pulse-access appuser && \
+    usermod -a -G sudo appuser
+
 
 # 配置 PulseAudio
 RUN mkdir -p /var/run/pulse && \
