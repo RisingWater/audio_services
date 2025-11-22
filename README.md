@@ -33,9 +33,10 @@ docker run -d \
     --device /dev/snd:/dev/snd \
     -v ${WORKDIR}:/workdir \
     --group-add audio \
+    --privileged \
     -p 6018:6018 \
     --restart unless-stopped \
-    audio-web-player
+    audio-services
 ```
 
 ## 📖 API 文档
