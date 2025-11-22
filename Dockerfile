@@ -40,7 +40,7 @@ RUN mkdir -p /var/run/pulse && \
 # 从 GitHub 克隆代码
 RUN pip3 install fastapi uvicorn python-multipart aiofiles websockets edge-tts playsound load_dotenv -i https://pypi.tuna.tsinghua.edu.cn/simple/
 
-git config --global --add safe.directory "*"
+RUN git config --global --add safe.directory "*"
 
 # 设置中文 locale
 RUN locale-gen zh_CN.UTF-8 && update-locale LANG=zh_CN.UTF-8
