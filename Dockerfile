@@ -42,6 +42,16 @@ RUN pip3 install fastapi uvicorn python-multipart aiofiles websockets edge-tts p
 
 git config --global --add safe.directory "*"
 
-COPY run.sh /run.sh
-RUN chmod +x /run.sh
-CMD ["/run.sh"]
+# 设置中文 locale
+RUN locale-gen zh_CN.UTF-8 && update-locale LANG=zh_CN.UTF-8
+ENV LANG=zh_CN.UTF-8
+ENV LANGUAGE=zh_CN:zh
+ENV LC_ALL=zh_CN.UTF-8
+
+# 设置工作目录
+WORKDIR /workdir/app
+
+# 切换到 appuser 用户
+USER appuser
+
+CMD ["/bin/bash"]
