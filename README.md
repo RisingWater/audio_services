@@ -28,15 +28,7 @@ docker build -t audio-services .
 
 ### 运行容器
 ```bash
-docker run -d \
-    --name audio-services \
-    --device /dev/snd:/dev/snd \
-    -v ${WORKDIR}:/workdir \
-    --group-add audio \
-    --privileged \
-    -p 6018:6018 \
-    --restart unless-stopped \
-    audio-services
+docker run -it -d --name audio-services --device /dev/snd:/dev/snd -v /vol1/audio_services:/workdir -u appuser --privileged -p 6018:6018 --restart unless-stopped audio-services /bin/bash
 ```
 
 ## 📖 API 文档

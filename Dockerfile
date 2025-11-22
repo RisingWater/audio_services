@@ -26,7 +26,7 @@ RUN apt-get update && apt-get install -y \
     locales-all
 
 # 添加用户
-RUN useradd -m -u 1000 appuser && \
+RUN useradd -m -u 1002 appuser && \
     usermod -a -G audio,pulse,pulse-access appuser && \
     usermod -a -G sudo appuser
 
