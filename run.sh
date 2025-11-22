@@ -17,6 +17,9 @@ if pactl info &> /dev/null; then
     # 检查音频设备
     echo "检查音频设备..."
     pactl list sinks short
+
+    # 设置音量（0-100% 或 0-153）
+    pactl set-sink-volume @DEFAULT_SINK@ 80%
 else
     echo "✗ PulseAudio 启动失败，将继续使用 ALSA"
 fi
