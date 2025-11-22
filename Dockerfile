@@ -1,5 +1,7 @@
 FROM ubuntu:22.04
 
+ENV UID=1002
+
 # 设置非交互式安装
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -26,7 +28,7 @@ RUN apt-get update && apt-get install -y \
     locales-all
 
 # 添加用户
-RUN useradd -m -u 1002 appuser && \
+RUN useradd -m -u $UID appuser && \
     usermod -a -G audio,pulse,pulse-access appuser && \
     usermod -a -G sudo appuser
 
@@ -56,4 +58,4 @@ WORKDIR /workdir/app
 # 切换到 appuser 用户
 USER appuser
 
-CMD ["/bin/bash"]
+CMD ["/workdir/run.sh"]
