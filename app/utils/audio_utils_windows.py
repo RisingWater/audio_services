@@ -9,7 +9,7 @@ from config import settings
 
 logger = logging.getLogger(__name__)
 
-def play_audio_file(session_id: str, file_path: str, audio_manager):
+def play_audio_file(session_id: str, file_path: str, audio_manager, delete_file=True):
     """使用 playsound 播放音频文件（支持 MP3、WAV）"""
     session = audio_manager.get_session(session_id)
     if not session:
@@ -35,7 +35,7 @@ def play_audio_file(session_id: str, file_path: str, audio_manager):
     finally:
         # 清理文件
         try:
-            if os.path.exists(file_path):
+            if delete_file and os.path.exists(file_path):
                 os.unlink(file_path)
         except Exception as e:
             logger.warning(f"Could not delete temp file {file_path}: {e}")

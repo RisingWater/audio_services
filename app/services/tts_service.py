@@ -30,15 +30,15 @@ class TTSService:
     async def text_to_speech(self, text: str, voice: str = "zh-CN-XiaoxiaoNeural") -> Optional[str]:
         """将文字转换为语音文件（带缓存）"""
         try:
+            # 创建临时文件
+            temp_file = self.audio_dir / f"tts_{os.urandom(4).hex()}.mp3"
+            
             # 先检查缓存
             cached_file = self.tts_cache.get_cache_file(text)
             if cached_file:
                 logger.info(f"使用缓存语音: {cached_file}")
                 return str(cached_file)
             
-            # 创建临时文件
-            temp_file = self.audio_dir / f"tts_{os.urandom(4).hex()}.mp3"
-
             communicate = edge_tts.Communicate(text, voice)
             await communicate.save(str(temp_file))
             

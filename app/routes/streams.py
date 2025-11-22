@@ -76,7 +76,7 @@ async def stream_audio_direct(file: UploadFile = File(...), volume: float = sett
     
     # 播放临时文件
     background_tasks = BackgroundTasks()
-    background_tasks.add_task(play_audio_file, session.session_id, str(temp_file), audio_manager, delete_file=True)
+    background_tasks.add_task(play_audio_file, session.session_id, str(temp_file), audio_manager, True)
     
     return StreamResponse(
         session_id=session.session_id,

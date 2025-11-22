@@ -59,7 +59,7 @@ async def text_to_speech(background_tasks: BackgroundTasks, request: TTSRequest)
             raise HTTPException(status_code=500, detail="语音生成失败")
         
         # 在后台播放并清理文件
-        background_tasks.add_task(play_audio_file, session.session_id, audio_file, audio_manager, delete_file=False)
+        background_tasks.add_task(play_audio_file, session.session_id, audio_file, audio_manager, False)
         
         return TTSResponse(
             session_id=session.session_id,
