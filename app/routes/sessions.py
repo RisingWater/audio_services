@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from typing import List
 
-from models import TTSSessionStatus, MusicStatus
+from models import TTSSessionStatus, MusicSessionStatus
 from managers import audio_manager
 
 router = APIRouter(prefix="/api/sessions", tags=["sessions"])
@@ -16,7 +16,7 @@ async def list_tts_sessions():
         sessions.append(session.get_status())
     return sessions
 
-@router.get("/music_session", response_model=MusicStatus)
+@router.get("/music_session", response_model=MusicSessionStatus)
 async def get_music_sessions():
     """获取音乐播放会话状态"""
     session = audio_manager.get_muisc_session()
