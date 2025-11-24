@@ -1,7 +1,7 @@
 import uuid
 from typing import List
 from managers.music_session import MusicSession
-from models.music import PlaylistElement, PlayListSessionStatus
+from models import PlaylistElement, PlayListSessionStatus
 
 class PlaylistSession:
     def __init__(self, name: str = None, volume: float = 1.0):
