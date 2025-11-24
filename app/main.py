@@ -8,6 +8,8 @@ from routes import tts
 from routes import sessions
 from routes import music
 
+from fastapi.middleware.cors import CORSMiddleware
+
 # 配置日志
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -19,6 +21,14 @@ app = FastAPI(title=settings.APP_NAME, version=settings.VERSION)
 app.include_router(sessions.router)
 app.include_router(tts.router)
 app.include_router(music.router)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:20201"],  # 你的前端地址
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/")
 async def root():
