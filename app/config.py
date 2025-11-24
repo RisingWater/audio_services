@@ -12,6 +12,8 @@ class Settings:
     VERSION = os.getenv("VERSION", "0.0.2")
     HOST = os.getenv("HOST", "0.0.0.0")
     PORT = int(os.getenv("PORT", "6018"))
+
+    NETCASE_API = os.getenv("NETCASE_API", "http://192.168.1.180:6019")
     
     # 音频配置
     if platform.system() == "Windows":

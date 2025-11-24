@@ -1,11 +1,15 @@
 import uuid
+import logging
 from typing import List
 from managers.music_session import MusicSession
 from models import PlaylistElement, PlayListSessionStatus
+from utils.netcase_utils import get_song_url_by_id
+
+logger = logging.getLogger(__name__)
 
 class PlaylistSession:
-    def __init__(self, name: str = None, volume: float = 1.0):
-        self.name = name
+    def __init__(self, id: str = None, volume: float = 1.0):
+        self.id = id
         self.session_id = str(uuid.uuid4())
         self.playlist = []  # List of PlaylistElement
         self.current_index = 0
@@ -34,6 +38,14 @@ class PlaylistSession:
             
         # 创建新的 MusicSession
         song = self.playlist[index]
+
+        if not song.id == "manual_url":
+            song.url = get_song_url_by_id(song.id)
+
+        if not song.url:
+            logger.error(f"无法获取歌曲 {song.name} 的播放URL")
+            return False
+
         self.current_session = MusicSession(
             url=song.url, 
             volume=self.volume
@@ -100,6 +112,7 @@ class PlaylistSession:
         
         return PlayListSessionStatus(
             session_id=self.session_id,
+            id=self.id,
             status=self.status,
             playlist=self.playlist,
             current_index=self.current_index,

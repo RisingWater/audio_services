@@ -25,6 +25,7 @@ class MusicSessionStatus(BaseModel):
 
 class PlayListSessionStatus(BaseModel):
     session_id: str
+    id: str
     status: str
     playlist: List[PlaylistElement]  # 使用 PlaylistElement 列表
     current_index: int = 0           # 当前播放的歌曲索引

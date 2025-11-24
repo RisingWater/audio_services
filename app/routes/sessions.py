@@ -1,8 +1,9 @@
 from fastapi import APIRouter, HTTPException
 from typing import List
 
-from models import TTSSessionStatus, PlayListSessionStatus
+from models import TTSSessionStatus, PlayListSessionStatus, PlaylistElement
 from managers import audio_manager
+from utils import get_song_name_by_id, get_song_url_by_id
 
 router = APIRouter(prefix="/api/sessions", tags=["sessions"])
 
@@ -105,3 +106,75 @@ async def prev_music_sessions():
     
     session.prev()
     return {"status": "playing", "session_id": session.session_id}
+
+@router.post("/music_session/playlist")
+async def set_playlist(
+    id: str,
+    song_ids: List[str],  # 歌曲ID列表
+    volume: float = 1.0
+):
+    """
+    设置播放队列
+    - 只存储歌曲ID和名称，播放时再获取实时URL
+    """
+    try:
+        if not song_ids:
+            raise HTTPException(status_code=400, detail="歌曲ID列表不能为空")
+
+        # 构建播放列表元素（只有ID和名称，没有URL）
+        playlist = []
+        for song_id in song_ids:
+            # 只获取歌曲名称
+            name_dict = get_song_name_by_id(song_id)
+            song_name = name_dict.get(song_id, f"未知歌曲_{song_id}")
+            
+            # 创建播放列表元素（URL为空）
+            playlist_element = PlaylistElement(
+                url="",  # 播放时再获取
+                name=song_name,
+                id=song_id
+            )
+            playlist.append(playlist_element)
+
+        # 设置播放队列
+        session = audio_manager.create_playlist_session(id, volume)
+        session.add_songs(playlist)
+        
+        return {
+            "status": "success",
+            "session_id": session.session_id,
+            "id": id,
+            "message": f"播放队列已设置，共{len(playlist)}首歌曲",
+            "playlist_length": len(playlist)
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"设置播放队列失败: {e}")
+        
+@router.post("/music_session/playlist/play/{song_id}")
+async def play_songid(song_id: str):
+    """
+    设置播放歌曲
+    """
+    try:
+        sessions = audio_manager.get_playlist_session()
+
+        index = -1
+        # 检查每个歌曲元素的有效性
+        for song in sessions.playlist:
+            if song.id == song_id:
+                index = sessions.playlist.index(song)
+
+        if index < 0:
+            raise HTTPException(status_code=400, detail=f"歌曲不存在")
+
+        sessions.play_index(index)
+
+        return {
+            "status": "success"
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"设置播放失败: {e}")

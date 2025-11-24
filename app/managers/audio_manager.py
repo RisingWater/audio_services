@@ -17,9 +17,9 @@ class AudioManager:
         self.tts_sessions[session.session_id] = session
         return session
     
-    def create_playlist_session(self, name: str = "default_playlist", volume: float = 1.0) -> PlaylistSession:
+    def create_playlist_session(self, id: str = "default_playlist", volume: float = 1.0) -> PlaylistSession:
         """创建播放队列会话"""
-        session = PlaylistSession(name, volume)
+        session = PlaylistSession(id, volume)
         if self.playlist_session:
             self.playlist_session.stop()
             self.playlist_session = None

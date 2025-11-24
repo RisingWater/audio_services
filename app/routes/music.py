@@ -17,7 +17,7 @@ async def play_url(request: MusicRequest):
     try:
         # 创建播放会话
         session = audio_manager.create_playlist_session()
-        session.add_songs([PlaylistElement(id=str(uuid.uuid4()), name="", url=request.url)])
+        session.add_songs([PlaylistElement(id="manual_url", name="", url=request.url)])
 
         if not session.play():
             raise HTTPException(status_code=500, detail="播放失败")
