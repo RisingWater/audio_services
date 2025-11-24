@@ -3,34 +3,27 @@ import logging
 from typing import Dict, Optional, List
 
 from managers.tts_session import TTSSession
-from managers.music_session import MusicSession
+from managers.playlist_session import PlaylistSession  # 新增
 
 logger = logging.getLogger(__name__)
 
 class AudioManager:
     def __init__(self):
         self.tts_sessions: Dict[str, TTSSession] = {}
-        self.music_session: MusicSession = None
+        self.playlist_session: Optional[PlaylistSession] = None
     
     def create_tts_session(self, text: str, voice: str, volume: float = 1.0) -> TTSSession:
         session = TTSSession(text, voice, volume)
         self.tts_sessions[session.session_id] = session
         return session
     
-    def create_music_session_by_url(self, url: str, volume: float = 1.0) -> MusicSession:
-        session = MusicSession(url, file_path=None, volume=volume)
-        if self.music_session:
-            self.music_session.stop()
-            self.music_session = None
-        self.music_session = session
-        return session
-    
-    def create_music_session_by_filepath(self, file_path: str, volume: float = 1.0) -> MusicSession:
-        session = MusicSession(url=None, file_path=file_path, volume=volume)
-        if self.music_session:
-            self.music_session.stop()
-            self.music_session = None
-        self.music_session = session
+    def create_playlist_session(self, name: str = "default_playlist", volume: float = 1.0) -> PlaylistSession:
+        """创建播放队列会话"""
+        session = PlaylistSession(name, volume)
+        if self.playlist_session:
+            self.playlist_session.stop()
+            self.playlist_session = None
+        self.playlist_session = session
         return session
     
     def get_all_tts_sessions(self) -> List[TTSSession]:
@@ -39,9 +32,9 @@ class AudioManager:
     def get_tts_session(self, session_id: str) -> Optional[TTSSession]:
         return self.tts_sessions.get(session_id)
     
-    def get_muisc_session(self) -> Optional[MusicSession]:
-        return self.music_session
-    
+    def get_playlist_session(self) -> Optional[PlaylistSession]:
+        return self.playlist_session
+
     def clean_up_tts_session(self, session_id: str):
         session = self.tts_sessions.pop(session_id, None)
         if session:
@@ -49,7 +42,7 @@ class AudioManager:
 
     def cleanup_old_sessions(self):
         for session_id, session in self.tts_sessions.items():
-            if session.is_finished() :
+            if session.is_finished():
                 self.tts_sessions.pop(session_id, None)
 
 # 全局音频管理器实例

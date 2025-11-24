@@ -8,7 +8,7 @@ from models import MusicSessionStatus
 logger = logging.getLogger(__name__)
 
 class MusicSession:
-    def __init__(self, url: str, file_path: str = None, volume: float = 1.0):
+    def __init__(self, url: str, volume: float = 1.0):
         session_id = str(uuid.uuid4())
         self.session_id = session_id
         self.volume: float = volume
@@ -16,10 +16,13 @@ class MusicSession:
         self.type: str = "music_url"
         
         self._url = url
-        self._file_path = file_path
         self._process = None
         self._play_thread = None
         self._is_paused = False
+        
+        # 进度属性
+        self._current_time = 0.0
+        self._duration = 0.0
 
     def _send_command(self, command: str) -> bool:
         """向 mplayer 发送命令"""
@@ -104,18 +107,14 @@ class MusicSession:
         self._is_paused = False
 
         # 检查播放源
-        if self._url:
-            url_play = True
-        elif self._file_path and os.path.exists(self._file_path):
-            url_play = False
-        else:
+        if not self._url:
             logger.error(f"Session {self.session_id} has no valid URL or file path.")
             self.status = "error"
             return False
         
         def _play_in_thread():
             try:
-                play_source = self._url if url_play else self._file_path
+                play_source = self._url
                 
                 # 使用 slave 模式，启用 stdin/stdout 管道
                 process = subprocess.Popen([
@@ -125,6 +124,7 @@ class MusicSession:
                     '-volume', str(int(self.volume * 100)),
                     '-slave',           # 启用 slave 模式
                     '-quiet',           # 减少输出
+                    '-identify',        # 获取文件信息
                     play_source
                 ], 
                 stdin=subprocess.PIPE,
@@ -145,10 +145,25 @@ class MusicSession:
                         try:
                             line = process.stdout.readline()
                             if line:
-                                # 可以在这里解析 mplayer 的输出
-                                # 例如：ANS_TIME_POSITION=12.34
-                                if 'ANS_' in line:
-                                    logger.debug(f"mplayer status: {line.strip()}")
+                                # 解析播放进度
+                                if 'ANS_TIME_POSITION=' in line:
+                                    # 格式: ANS_TIME_POSITION=12.34
+                                    time_str = line.strip().split('=')[1]
+                                    self._current_time = float(time_str)
+                                    logger.debug(f"Current time: {self._current_time}")
+                                
+                                elif 'ANS_LENGTH=' in line:
+                                    # 格式: ANS_LENGTH=240.56
+                                    duration_str = line.strip().split('=')[1]
+                                    self._duration = float(duration_str)
+                                    logger.debug(f"Duration: {self._duration}")
+                                
+                                elif 'ID_LENGTH=' in line:
+                                    # -identify 参数输出的总时长信息
+                                    duration_str = line.strip().split('=')[1]
+                                    self._duration = float(duration_str)
+                                    logger.debug(f"File duration: {self._duration}")
+                                    
                         except Exception as e:
                             if process.poll() is None:  # 如果进程还在运行
                                 logger.error(f"Error reading mplayer output: {e}")
@@ -173,6 +188,9 @@ class MusicSession:
                 self._process = None
                 self._play_thread = None
                 self._is_paused = False
+                # 重置进度
+                self._current_time = 0.0
+                self._duration = 0.0
         
         self._play_thread = threading.Thread(target=_play_in_thread)
         self._play_thread.daemon = True
@@ -210,13 +228,42 @@ class MusicSession:
             self._process = None
             self._play_thread = None
             self._is_paused = False
+            # 重置进度
+            self._current_time = 0.0
+            self._duration = 0.0
+
+    def _query_progress(self) -> dict:
+        """主动查询播放进度"""
+        if not self._process or self._process.poll() is not None:
+            return {"current_time": 0.0, "duration": 0.0, "progress": 0.0}
+        
+        try:
+            # 使用正确的查询命令（根据 cmdlist）
+            self._send_command("get_time_pos")
+            self._send_command("get_time_length")
+            
+            # 返回当前已知的最新进度
+            return {
+                "current_time": self._current_time,
+                "duration": self._duration,
+                "progress": self._current_time / self._duration if self._duration > 0 else 0.0
+            }
+        except Exception as e:
+            logger.error(f"Query progress failed: {e}")
+            return {"current_time": 0.0, "duration": 0.0, "progress": 0.0}
 
     def get_status(self) -> MusicSessionStatus:
         """获取会话状态"""
+        # 查询当前进度
+        progress = self._query_progress()
+        
         return MusicSessionStatus(
             session_id=self.session_id,
             status=self.status,
-            url=self.url,
-            file_path=self.file_path,
-            volume=self.volume)
-    
+            url=self._url,
+            volume=self.volume,
+            current_time=progress["current_time"],
+            duration=progress["duration"],
+            progress=progress["progress"],
+            is_paused=self._is_paused
+        )
