@@ -6,6 +6,8 @@ echo "=== 初始化音频服务 ==="
 echo "结束原有的pulseaudio服务"
 pkill pulseaudio | true
 
+sleep 3
+
 # 启动 PulseAudio
 echo "启动 PulseAudio..."
 pulseaudio --start --exit-idle-time=-1 --log-target=stderr &
