@@ -2,8 +2,8 @@ import os
 import logging
 from typing import Dict, Optional, List
 
-from managers import TTSSession, MusicSession
-from config import settings
+from managers.tts_session import TTSSession
+from managers.music_session import MusicSession
 
 logger = logging.getLogger(__name__)
 
