@@ -1,14 +1,11 @@
-from .session import PlaybackSession, StreamSession
-from .response import PlayResponse, StreamResponse, SessionStatus, VolumeControl
+from .response import TTSSessionStatus
 from .tts import TTSRequest, TTSResponse, VoiceInfo
+from .music import MusicRequest, MusicResponse
 
 __all__ = [
-    "PlaybackSession",
-    "StreamSession", 
-    "PlayResponse",
-    "StreamResponse",
-    "SessionStatus",
-    "VolumeControl",
+    "TTSSessionStatus",
+    "MusicRequest",
+    "MusicResponse",
     "TTSRequest",
     "TTSResponse",
     "VoiceInfo"

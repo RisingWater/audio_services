@@ -9,7 +9,7 @@ load_dotenv()
 class Settings:
     # 基础配置
     APP_NAME = os.getenv("APP_NAME", "Audio Web Player")
-    VERSION = os.getenv("VERSION", "0.0.1")
+    VERSION = os.getenv("VERSION", "0.0.2")
     HOST = os.getenv("HOST", "0.0.0.0")
     PORT = int(os.getenv("PORT", "6018"))
     
@@ -24,11 +24,6 @@ class Settings:
     # 支持的音频格式
     SUPPORTED_FORMATS = set(os.getenv("SUPPORTED_FORMATS", "wav,mp3,ogg,flac").split(','))
     
-    # 音频参数
-    DEFAULT_VOLUME = float(os.getenv("DEFAULT_VOLUME", "1.0"))
-    SAMPLE_RATE = int(os.getenv("SAMPLE_RATE", "44100"))
-    CHANNELS = int(os.getenv("CHANNELS", "2"))
-    
     # 会话配置
     SESSION_CLEANUP_INTERVAL = int(os.getenv("SESSION_CLEANUP_INTERVAL", "300"))
     SESSION_EXPIRE_TIME = int(os.getenv("SESSION_EXPIRE_TIME", "600"))
@@ -39,8 +34,6 @@ class Settings:
 {self.APP_NAME} v{self.VERSION}
 监听地址: {self.HOST}:{self.PORT}
 音频目录: {self.AUDIO_DIR}
-支持格式: {', '.join(self.SUPPORTED_FORMATS)}
-默认音量: {self.DEFAULT_VOLUME}
 采样率: {self.SAMPLE_RATE}
 声道数: {self.CHANNELS}
         """.strip()

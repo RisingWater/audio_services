@@ -27,7 +27,7 @@ class TTSService:
             logger.error(f"Error getting voices: {e}")
             return []
     
-    async def text_to_speech(self, text: str, voice: str = "zh-CN-XiaoxiaoNeural") -> Optional[str]:
+    def text_to_speech(self, text: str, voice: str = "zh-CN-XiaoxiaoNeural") -> Optional[str]:
         """将文字转换为语音文件（带缓存）"""
         try:
             # 创建临时文件
@@ -40,7 +40,7 @@ class TTSService:
                 return str(cached_file)
             
             communicate = edge_tts.Communicate(text, voice)
-            await communicate.save(str(temp_file))
+            communicate.save_sync(str(temp_file))
             
             # 检查文件是否生成成功
             if not os.path.exists(temp_file) or os.path.getsize(temp_file) == 0:
