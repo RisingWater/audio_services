@@ -3,6 +3,7 @@ import logging
 import subprocess
 import os
 import threading
+from models import MusicSessionStatus
 
 logger = logging.getLogger(__name__)
 
@@ -210,13 +211,12 @@ class MusicSession:
             self._play_thread = None
             self._is_paused = False
 
-    def get_status(self) -> dict:
+    def get_status(self) -> MusicSessionStatus:
         """获取会话状态"""
-        return {
-            "session_id": self.session_id,
-            "status": self.status,
-            "volume": self.volume,
-            "type": self.type,
-            "is_paused": self._is_paused,
-            "is_playing": self._play_thread and self._play_thread.is_alive()
-        }
+        return MusicSessionStatus(
+            session_id=self.session_id,
+            status=self.status,
+            url=self.url,
+            file_path=self.file_path,
+            volume=self.volume)
+    
