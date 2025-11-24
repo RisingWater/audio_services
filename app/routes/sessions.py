@@ -139,7 +139,7 @@ async def set_playlist(request: SetPlaylistRequest):
         return {
             "status": "success",
             "session_id": session.session_id,
-            "id": id,
+            "id": str(request.id),
             "message": f"播放队列已设置，共{len(playlist)}首歌曲",
             "playlist_length": len(playlist)
         }
