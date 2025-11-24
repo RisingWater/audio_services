@@ -1,5 +1,16 @@
 #!/bin/bash
 
+# 切换到工作目录
+cd /workdir
+
+# 更新代码（如果有权限）
+if [ -d .git ] && git status &> /dev/null; then
+    echo "更新代码..."
+    git pull
+else
+    echo "跳过代码更新"
+fi
+
 # 启动 PulseAudio
 echo "启动 PulseAudio..."
 
@@ -81,16 +92,6 @@ if [ "$PULSE_STARTED" = true ]; then
     fi
 fi
 
-# 切换到工作目录
-cd /workdir
-
-# 更新代码（如果有权限）
-if [ -d .git ] && git status &> /dev/null; then
-    echo "更新代码..."
-    git pull
-else
-    echo "跳过代码更新"
-fi
 
 cd /workdir/app
 
