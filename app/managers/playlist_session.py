@@ -17,6 +17,12 @@ class PlaylistSession:
         """添加歌曲到播放列表"""
         self.playlist.extend(songs)
         
+    def play(self):
+        """播放列表中的歌曲"""
+        if not self.playlist:
+            return False
+        return self.play_index(self.current_index)
+    
     def play_index(self, index: int):
         """播放指定位置的歌曲"""
         if index < 0 or index >= len(self.playlist):
