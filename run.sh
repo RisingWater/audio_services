@@ -40,7 +40,7 @@ else
 fi
 
 # 切换到工作目录
-cd /workdir/app
+cd /workdir
 
 # 更新代码（如果有权限）
 if [ -d .git ] && git status &> /dev/null; then
@@ -49,6 +49,8 @@ if [ -d .git ] && git status &> /dev/null; then
 else
     echo "跳过代码更新"
 fi
+
+cd /workdir/app
 
 # 启动 FastAPI 应用
 echo "启动 FastAPI 应用..."
