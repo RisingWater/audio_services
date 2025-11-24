@@ -50,7 +50,7 @@ class AudioManager:
     def cleanup_old_sessions(self):
         for session_id, session in self.tts_sessions.items():
             if session.is_finished() :
-                self.sessions.pop(session_id, None)
+                self.tts_sessions.pop(session_id, None)
 
 # 全局音频管理器实例
 audio_manager = AudioManager()
