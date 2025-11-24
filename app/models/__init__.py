@@ -1,4 +1,4 @@
-from .response import TTSSessionStatus, MusicSessionStatus, PlaylistElement, PlayListSessionStatus
+from .response import TTSSessionStatus, MusicSessionStatus, PlaylistElement, PlayListSessionStatus, SetPlaylistRequest
 from .tts import TTSRequest, TTSResponse, VoiceInfo
 from .music import MusicRequest, MusicResponse
 
@@ -7,6 +7,7 @@ __all__ = [
     "MusicSessionStatus",
     "PlayListSessionStatus",
     "PlaylistElement",
+    "SetPlaylistRequest",
     "MusicRequest",
     "MusicResponse",
     "TTSRequest",
