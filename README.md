@@ -6,7 +6,6 @@
 
 - 🎵 **多音轨混音** - 支持同时播放多个音频文件
 - 🌐 **Web API** - 完整的 RESTful API 接口
-- 📡 **流式播放** - 支持实时音频流播放
 - 🔄 **会话管理** - 每个播放会话独立管理
 - 🐳 **Docker 化** - 容器化部署，开箱即用
 - 📊 **状态监控** - 实时查看播放状态和会话信息
@@ -28,7 +27,7 @@ docker build -t audio-services .
 
 ### 运行容器
 ```bash
-docker run -it -d --name audio-services --device /dev/snd:/dev/snd -v [你的代码仓库路径]:/workdir -u appuser --privileged -p 6018:6018 --restart unless-stopped audio-services /bin/bash
+docker run -d --name audio-services --device /dev/snd:/dev/snd -v [你的代码仓库路径]:/workdir -u appuser --privileged -p 6018:6018 --restart unless-stopped audio-services
 ```
 
 ## 📖 API 文档

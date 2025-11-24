@@ -1,15 +1,12 @@
-from fastapi import FastAPI, UploadFile, File, HTTPException, BackgroundTasks
+from fastapi import FastAPI
 import asyncio
 import logging
-from datetime import datetime
 
 from config import settings
 from managers import audio_manager
-from models import PlayResponse
-from utils import play_audio_file
-from utils import save_upload_file
 from routes import tts
-from routes import sessions, streams, websocket
+from routes import sessions
+from routes import music
 
 # 配置日志
 logging.basicConfig(level=logging.INFO)
@@ -20,62 +17,16 @@ app = FastAPI(title=settings.APP_NAME, version=settings.VERSION)
 
 # 包含路由
 app.include_router(sessions.router)
-app.include_router(streams.router)
-app.include_router(websocket.router)
 app.include_router(tts.router)
+app.include_router(music.router)
 
 @app.get("/")
 async def root():
     """根路径"""
-    active_sessions = len([s for s in audio_manager.get_all_sessions() if s.status == "playing"])
-    active_streams = len([s for s in audio_manager.get_all_stream_sessions() if s.status == "playing"])
     return {
         "message": "Audio Web Player API", 
-        "version": settings.VERSION,
-        "active_sessions": active_sessions,
-        "active_streams": active_streams,
-        "total_sessions": len(audio_manager.get_all_sessions()) + len(audio_manager.get_all_stream_sessions())
+        "version": settings.VERSION
     }
-
-@app.post("/api/play", response_model=PlayResponse)
-async def play_audio(background_tasks: BackgroundTasks, file: UploadFile = File(...), volume: float = settings.DEFAULT_VOLUME):
-    """播放上传的音频文件"""
-    file_ext = file.filename.split('.')[-1].lower()
-    if file_ext not in settings.SUPPORTED_FORMATS:
-        raise HTTPException(status_code=400, detail=f"Unsupported audio format: {file_ext}")
-    
-    session = audio_manager.create_session()
-    session.filename = file.filename
-    session.format = file_ext
-    session.volume = max(0.0, min(1.0, volume))
-    
-    temp_file = settings.AUDIO_DIR / f"audio_{session.session_id}.{file_ext}"
-    
-    async with open(temp_file, 'wb') as f:
-        content = await file.read()
-        await f.write(content)
-    
-    background_tasks.add_task(play_audio_file, session.session_id, str(temp_file), audio_manager, True)
-    
-    return PlayResponse(
-        session_id=session.session_id,
-        status="created",
-        filename=file.filename,
-        message="Audio playback scheduled"
-    )
-
-@app.post("/api/stop-all")
-async def stop_all_sessions():
-    """停止所有会话"""
-    session_ids = [s.session_id for s in audio_manager.get_all_sessions()]
-    stream_ids = [s.session_id for s in audio_manager.get_all_stream_sessions()]
-    
-    for session_id in session_ids:
-        audio_manager.stop_session(session_id)
-    for stream_id in stream_ids:
-        audio_manager.stop_stream_session(stream_id)
-    
-    return {"status": "all_stopped", "stopped_sessions": len(session_ids) + len(stream_ids)}
 
 # 清理任务
 async def cleanup_task():
