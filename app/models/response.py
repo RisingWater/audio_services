@@ -33,3 +33,9 @@ class PlayListSessionStatus(BaseModel):
     volume: float = 1.0
     is_playing: bool = False
     playlist_length: int = 0         # 播放列表长度
+
+
+class SetPlaylistRequest(BaseModel):
+    id: int
+    song_ids: List[int]
+    volume: float = 1.0

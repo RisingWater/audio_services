@@ -17,11 +17,11 @@ def get_song_name_by_id(song_id: str) -> str:
         
         if songs:
             return songs[0]['name']
-        return ""
+        return "unknow song"
         
     except Exception as e:
         print(f"获取歌曲名称失败: {e}")
-        return ""
+        return "unknow song"
 
 def get_song_url_by_id(song_id: str) -> Optional[str]:
     """
