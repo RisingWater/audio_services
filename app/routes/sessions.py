@@ -154,6 +154,8 @@ async def play_songid(song_id: str):
     """
     try:
         sessions = audio_manager.get_playlist_session()
+        if not sessions:
+            raise HTTPException(status_code=404, detail="播放列表不存在")
 
         index = -1
         # 检查每个歌曲元素的有效性
@@ -174,3 +176,39 @@ async def play_songid(song_id: str):
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"设置播放失败: {e}")
+    
+@router.post("/music_session/volume/{volume}")
+async def set_volume(volume: float):
+    """设置音量"""
+    try:
+        session = audio_manager.get_playlist_session()
+        if not session:
+            raise HTTPException(status_code=404, detail="播放列表不存在")
+        
+        if session.set_volume(volume):
+            return {"status": "success", "message": f"音量已设置为 {volume}"}
+        else:
+            raise HTTPException(status_code=500, detail="设置音量失败")
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"设置音量失败: {e}")
+
+@router.post("/music_session/seek/{seconds}")
+async def seek_position(seconds: float):
+    """跳转到指定位置"""
+    try:
+        session = audio_manager.get_playlist_session()
+        if not session:
+            raise HTTPException(status_code=404, detail="会话不存在")
+        
+        if session.seek(seconds):
+            return {"status": "success", "message": f"已跳转到 {seconds} 秒"}
+        else:
+            raise HTTPException(status_code=500, detail="跳转失败")
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"跳转失败: {e}")

@@ -267,3 +267,14 @@ class MusicSession:
             progress=progress["progress"],
             is_paused=self._is_paused
         )
+    
+    def seek(self, seconds: float) -> bool:
+        """
+        跳转到指定位置（单位：秒）
+        """
+        if seconds < 0:
+            logger.error(f"Seek position {seconds} cannot be negative")
+            return False
+        
+        # 使用绝对跳转（type=2）
+        return self._send_command(f"seek {seconds} 2")
