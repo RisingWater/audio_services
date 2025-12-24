@@ -62,6 +62,10 @@ fi
 
 # 只有 PulseAudio 启动成功后才执行后续操作
 if [ "$PULSE_STARTED" = true ]; then
+    # 启用匿名连接
+    echo "启用匿名连接..."
+    pactl load-module module-native-protocol-unix auth-anonymous=1
+
     # 卸载 null sink（如果存在）
     echo "清理现有音频模块..."
     pactl unload-module module-null-sink 2>/dev/null || true
