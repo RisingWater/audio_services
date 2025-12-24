@@ -1,3 +1,3 @@
-from . import sessions, tts, music
+from . import sessions, tts
 
-__all__ = ["sessions", "tts", "music"]
+__all__ = ["sessions", "tts"]

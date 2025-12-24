@@ -6,7 +6,6 @@ from config import settings
 from managers import audio_manager
 from routes import tts
 from routes import sessions
-from routes import music
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -20,7 +19,6 @@ app = FastAPI(title=settings.APP_NAME, version=settings.VERSION)
 # 包含路由
 app.include_router(sessions.router)
 app.include_router(tts.router)
-app.include_router(music.router)
 
 app.add_middleware(
     CORSMiddleware,
