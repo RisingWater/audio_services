@@ -27,7 +27,7 @@ docker build -t audio-services .
 
 ### 运行容器
 ```bash
-docker run -d --name audio-services --device /dev/snd:/dev/snd -v [你的代码仓库路径]:/workdir -u appuser --privileged -p 6018:6018 --restart unless-stopped audio-services
+docker run -d --name audio-services --device /dev/snd:/dev/snd -v [你的代码仓库路径]:/workdir -v /var/run/pulse:/var/run/pulse -u appuser --privileged -p 6018:6018 --restart unless-stopped audio-services
 ```
 
 ## 📖 API 文档
